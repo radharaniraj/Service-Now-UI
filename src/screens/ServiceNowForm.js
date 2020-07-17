@@ -16,21 +16,21 @@ class ServiseNowForm extends Component {
       let password = config.PASSWORD;
       let headers = new Headers();
     
-    let data = {
+      let data = {
         'description': Description
-    }
-    console.log(data)
+      }
+      console.log(data)
   
-  //headers.append('Content-Type', 'text/json');
-  headers.append('Authorization', 'Basic ' + base64.encode(username + ":" + password));
-  headers.append('Content-Type', 'application/json;charset=UTF-8') 
-  fetch(url, {method:'POST',
-    headers: headers,
-    body: JSON.stringify(data)
+      //headers.append('Content-Type', 'text/json');
+      headers.append('Authorization', 'Basic ' + base64.encode(username + ":" + password));
+      headers.append('Content-Type', 'application/json;charset=UTF-8') 
+      fetch(url, {method:'POST',
+         headers: headers,
+         body: JSON.stringify(data)
    })
-    .then(response => {
-        console.log(response.status)
-        if(response.status==201)
+      .then(response => {
+           console.log(response.status)
+         if(response.status==201)
         {
             Alert.alert("Ticket created "+Description)
         }
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
       borderWidth: 3,
       backgroundColor:'#999999',
       flex:5,
-   padding:10,
+      padding:10,
       fontSize:25,
       borderRadius:20
    },
