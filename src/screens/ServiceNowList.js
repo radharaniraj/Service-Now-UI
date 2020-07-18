@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 let base64 = require('base-64');
-import {config} from '../credential/env';
+import {config} from '../credentials/env';
 import {
   StyleSheet,
   Alert,
@@ -9,20 +9,12 @@ import {
   FlatList,
   Button
 } from 'react-native';
-import { createStackNavigator, createAppContainer } from '@react-navigation/stack';
-
 
 class ServiceNowList extends Component {
-
-  static navigationOptions =
-  {
-     title: 'MainActivity',
-  };
  
-  FunctionToOpenSecondActivity = () =>
+  OpenServiceNowForm = () =>
   {
-     this.props.navigation.navigate('ServiceNowForm');
-     
+     this.props.navigation.navigate('ServiceNowForm');   
   }
  
   constructor(props) {
@@ -46,9 +38,7 @@ class ServiceNowList extends Component {
 //handling onPress action  
 getListViewItem = (item) => {  
     Alert.alert(
-      "description : "+item.description+ '\n'+
-      "Ticket Number: "+item.number + '\n'+
-      "Created By: "+item.sys_created_by + '\n'
+      "description : "+item.description
     );  
 }
 
@@ -59,9 +49,12 @@ componentDidMount(){
   let headers = new Headers();
   console.log(url,username,password)
   headers.append('Authorization', 'Basic ' + base64.encode(username + ":" + password));
-  fetch(url, {method:'GET',
-  headers: headers,
-  })
+  fetch(url,
+    { 
+      method:'GET',
+      headers: headers,
+    }
+  )
   .then(response => response.json())
   .then((responseJson) => {
       this.setState({
@@ -86,16 +79,16 @@ render() {
                 data={this.state.dataSource}  
                 renderItem={({item}) => 
                 <View>
-                    <Text style={styles.item}  
+                    <Text style={styles.smalltext}  
                           onPress={this.getListViewItem.bind(this, item)}>{item.description}</Text>
-                      <Text style={styles.itemsmall}  
+                    <Text style={styles.smalltext}  
                           onPress={this.getListViewItem.bind(this, item)}>{"Ticket No. "+item.number}</Text>
-                       <Text style={styles.itemsmall}  
+                    <Text style={styles.smalltext}  
                           onPress={this.getListViewItem.bind(this, item)}>{"Created by "+item.sys_created_by}</Text>   
-                          </View> }  
+                </View> }  
                 ItemSeparatorComponent={this.renderSeparator}  
             />
-            <Button onPress = { this.FunctionToOpenSecondActivity } title = 'Click To Post a New Ticket'/>  
+            <Button onPress = { this.OpenServiceNowForm } title = 'Post a New Ticket'/>  
         </View>  
     ); 
   }  
@@ -111,7 +104,7 @@ const styles = StyleSheet.create({
       fontSize: 18,  
       height: 30,  
   },
-  itemsmall: {  
+  smalltext: {  
     padding: 5,  
     fontSize: 12,  
     height: 25,  
