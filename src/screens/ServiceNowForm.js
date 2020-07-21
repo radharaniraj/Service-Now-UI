@@ -1,25 +1,35 @@
-import React, { Component } from 'react'
-let base64 = require('base-64')
-import { config } from '../credentials/env';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert } from 'react-native'
+import React from 'react';
+import { Text, View, StyleSheet, TextInput, Alert } from 'react-native';
+import * as Constants from 'expo-constants';
+import { Button } from 'react-native-paper';
+import { Formik, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+let base64 = require('base-64');
 
-class ServiceNowForm extends Component {
-   state = {
-      Description: ''
-   }
-   handleDescription = (text) => {
-      this.setState({ Description: text })
-   }
-   login = (Description) => {
-      let url = 'https://'+config.INSTANCE+'.service-now.com/api/now/table/'+config.TABLE_API_NAME;
-      let username = config.USERNAME;
-      let password = config.PASSWORD;
-      let headers = new Headers();
+export default class App extends React.Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Create Service Now Tickets</Text>
+        <Formik
+          initialValues={{ Description: ''}}
+          validationSchema={Yup.object({
+            Description: Yup.string()              
+              .required('Required')
+          })}
+          onSubmit={(values, formikActions) => {
+            setTimeout(() => {
+              const ds = values.Description
+              let url = 'https://dev64765.service-now.com/api/now/table/x_514301_shubhamap_shubhamtable';
+      let username = 'admin';
+      let password = 'Shubham123';
+       let headers = {}
+  headers['Authorization'] =  'Basic ' + base64.encode(username + ":" + password);
+  headers['Content-Type'] = 'application/json;charset=UTF-8';
+
       let data = {
-        'description': Description
+        'description': ds
       }
-      headers.append('Authorization', 'Basic ' + base64.encode(username + ":" + password));
-      headers.append('Content-Type', 'application/json;charset=UTF-8') 
       fetch(url, {method:'POST',
          headers: headers,
          body: JSON.stringify(data)
@@ -28,69 +38,93 @@ class ServiceNowForm extends Component {
          console.log(response.status)
          if(response.status==201)
         {
-            Alert.alert("Ticket created "+Description)
+            Alert.alert("Ticket created "+ds)
+        }
+        else{
+          Alert.alert("error occurred")
         }
     })
     .catch(error => console.log(error))
-      
-   }
-   render() {
-      return (
-         <View style = {styles.container}>
-            <TextInput style = {styles.input}
-            value = {this.state.value}
-            onChangeText={text=>this.setState({value:text})}
-               underlineColorAndroid = "transparent"
-               placeholder = "Write The Description Of Your Tickets"
-               placeholderTextColor = "#FFFFFF"
-               multiline={true}      
-               autoCapitalize = "none"
-               onChangeText = {this.handleDescription}/>
-            <TouchableOpacity
-               style = {styles.button}
-               onPress = {
-                  () => this.login(this.state.Description)
-               }>
-               <Text style = {styles.buttonText}> Submit </Text>
-            </TouchableOpacity>
-         </View>
-      )
-   }
+              // Important: Make sure to setSubmitting to false so our loading indicator
+              // goes away.
+              formikActions.setSubmitting(false);
+            }, 500);
+          }}>
+          {props => (
+            <View>
+             <TextInput
+                onChangeText={props.handleChange('Description')}
+                onBlur={props.handleBlur('Description')}
+                
+                value={props.values.Description}
+                autoFocus
+                placeholder="Write your Description Here"
+                multiline={true}
+                style={styles.input}
+                
+                onSubmitEditing={() => {
+                  // on certain forms, it is nice to move the user's focus
+                  // to the next input when they press enter.
+                
+                }}
+              />
+              {props.touched.Description && props.errors.Description ? (
+                <Text style={styles.error}>{props.errors.Description}</Text>
+              ) : null}
+           
+              <Button
+                onPress={props.handleSubmit}
+                color="black"
+                mode="contained"
+                loading={props.isSubmitting}
+                disabled={props.isSubmitting}
+                style={{ marginTop: 16 }}>
+                Submit
+              </Button>
+              <Button
+                onPress={props.handleReset}
+                color="black"
+                mode="outlined"
+                disabled={props.isSubmitting}
+                style={{ marginTop: 16 }}>
+                Reset
+              </Button>
+            </View>
+          )}
+        </Formik>
+      </View>
+    );
+  }
 }
-export default ServiceNowForm
 
 const styles = StyleSheet.create({
-   container: {
-      paddingTop: 13,
-      backgroundColor:'#454545',
-      flex:1
-   },
-   
-   input: {
-      margin: 20,
-      height: 1,
-      borderColor: '#454545',
-      borderWidth: 3,
-      backgroundColor:'#999999',
-      flex:5,
-      padding:10,
-      fontSize:25,
-      borderRadius:20
-   },
-   buttonText: {
-      fontSize: 18,
-      color: 'white',
-      alignSelf: 'center'
-    },
-    button: {
-      height: 36,
-      backgroundColor: '#48BBEC',
-      borderColor: '#48BBEC',
-      borderWidth: 1,
-      borderRadius: 8,
-      marginBottom: 10,
-      alignSelf: 'stretch',
-      justifyContent: 'center'
-    }
-
-})
+  container: {
+    flex: 1,
+    paddingTop: 20,
+    backgroundColor: '#d3d3d3',
+    padding: 8,
+  },
+  title: {
+    margin: 24,
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  error: {
+    margin: 8,
+    fontSize: 14,
+    color: 'red',
+    fontWeight: 'bold',
+  },
+  input: {
+    fontSize:20,
+    display:"flex",
+    textAlignVertical: "top",
+    height: 250,
+    paddingHorizontal: 10,
+    width: '100%',
+    borderColor: '#000',
+    borderWidth: 2,
+    backgroundColor: '#fff',
+  },
+});
