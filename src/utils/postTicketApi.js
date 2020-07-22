@@ -13,17 +13,12 @@ export const postTicketApi = async (description) => {
     let data = {
         'description': ds
     };
-    fetch(url, {
+    return await fetch(url, {
         method:'POST',
         headers: headers,
         body: JSON.stringify(data)
     }).then(response => {
-        if (response.status == 201) {
-            Alert.alert("Ticket created " + ds)
-        } else {
-            Alert.alert("error occurred")
-        }
-        return JSON.stringify(response);
+        return response;
     }).catch(error => {
         Alert.alert("error occurred")
         return error})
