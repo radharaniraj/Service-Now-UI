@@ -19,7 +19,15 @@ export default class App extends React.Component {
           })}
           onSubmit={(values, formikActions) => {
             setTimeout(async () => {
-                postTicketApi(values.Description);
+                postTicketApi(values.Description)
+                    .then(response=>{
+                        if(response.status==201){
+                            Alert.alert('Ticket Created for '+values.Description);
+                        }
+                        else{
+                            Alert.alert('Some error occured');
+                        }
+                    });
                 formikActions.setSubmitting(false);
             }, 500);
           }}>
