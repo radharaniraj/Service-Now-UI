@@ -1,10 +1,10 @@
 import React from 'react';
 import { Text, View, StyleSheet, TextInput, Alert } from 'react-native';
-import * as Constants from 'expo-constants';
 import { Button } from 'react-native-paper';
 import { Formik, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 let base64 = require('base-64');
+import {postTicketApi} from "../utils/postTicketApi";
 
 export default class App extends React.Component {
   render() {
@@ -14,43 +14,21 @@ export default class App extends React.Component {
         <Formik
           initialValues={{ Description: ''}}
           validationSchema={Yup.object({
-            Description: Yup.string()              
+            Description: Yup.string()
               .required('Required')
-              .min(300, 'Description must be greater than 300 characters')
-              .max(4000, 'Description must be less than 4000 characters')
-
           })}
           onSubmit={(values, formikActions) => {
-            setTimeout(() => {
-              const ds = values.Description
-              let url = 'https://dev64765.service-now.com/api/now/table/x_514301_shubhamap_shubhamtable';
-      let username = 'admin';
-      let password = 'Shubham123';
-       let headers = {}
-  headers['Authorization'] =  'Basic ' + base64.encode(username + ":" + password);
-  headers['Content-Type'] = 'application/json;charset=UTF-8';
-
-      let data = {
-        'description': ds
-      }
-      fetch(url, {method:'POST',
-         headers: headers,
-         body: JSON.stringify(data)
-      })
-      .then(response => {
-         console.log(response.status)
-         if(response.status==201)
-        {
-            Alert.alert("Ticket created "+ds)
-        }
-        else{
-          Alert.alert("error occurred")
-        }
-    })
-    .catch(error => console.log(error))
-              // Important: Make sure to setSubmitting to false so our loading indicator
-              // goes away.
-              formikActions.setSubmitting(false);
+            setTimeout(async () => {
+                postTicketApi(values.Description)
+                    .then(response=>{
+                        if(response.status==201){
+                            Alert.alert('Ticket Created for '+values.Description);
+                        }
+                        else{
+                            Alert.alert('Some error occured');
+                        }
+                    });
+                formikActions.setSubmitting(false);
             }, 500);
           }}>
           {props => (
@@ -58,23 +36,23 @@ export default class App extends React.Component {
              <TextInput
                 onChangeText={props.handleChange('Description')}
                 onBlur={props.handleBlur('Description')}
-                
+
                 value={props.values.Description}
                 autoFocus
                 placeholder="Write your Description Here"
                 multiline={true}
                 style={styles.input}
-                
+
                 onSubmitEditing={() => {
                   // on certain forms, it is nice to move the user's focus
                   // to the next input when they press enter.
-                
+
                 }}
               />
               {props.touched.Description && props.errors.Description ? (
                 <Text style={styles.error}>{props.errors.Description}</Text>
               ) : null}
-           
+
               <Button
                 onPress={props.handleSubmit}
                 color="black"
