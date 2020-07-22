@@ -1,6 +1,5 @@
 import React from 'react';
 import { Text, View, StyleSheet, TextInput, Alert } from 'react-native';
-import * as Constants from 'expo-constants';
 import { Button } from 'react-native-paper';
 import { Formik, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -14,7 +13,7 @@ export default class App extends React.Component {
         <Formik
           initialValues={{ Description: ''}}
           validationSchema={Yup.object({
-            Description: Yup.string()              
+            Description: Yup.string()
               .required('Required')
           })}
           onSubmit={(values, formikActions) => {
@@ -55,23 +54,23 @@ export default class App extends React.Component {
              <TextInput
                 onChangeText={props.handleChange('Description')}
                 onBlur={props.handleBlur('Description')}
-                
+
                 value={props.values.Description}
                 autoFocus
                 placeholder="Write your Description Here"
                 multiline={true}
                 style={styles.input}
-                
+
                 onSubmitEditing={() => {
                   // on certain forms, it is nice to move the user's focus
                   // to the next input when they press enter.
-                
+
                 }}
               />
               {props.touched.Description && props.errors.Description ? (
                 <Text style={styles.error}>{props.errors.Description}</Text>
               ) : null}
-           
+
               <Button
                 onPress={props.handleSubmit}
                 color="black"
