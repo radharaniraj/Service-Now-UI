@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-let base64 = require('base-64');
-import {config} from '../credentials/env';
+import {getTicketApi} from '../utils/getTicketApi'
 import {
   StyleSheet,
   Alert,
@@ -12,12 +11,12 @@ import {
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 class ServiceNowList extends Component {
- 
+
   OpenServiceNowForm = () =>
   {
-     this.props.navigation.navigate('ServiceNowForm');   
+     this.props.navigation.navigate('ServiceNowForm');
   }
- 
+
   constructor(props) {
     super(props);
     this.state = {
@@ -25,39 +24,28 @@ class ServiceNowList extends Component {
       dataSource:[]
      };
    }
-  renderSeparator = () => {  
-    return (  
-        <View  
-            style={{  
-                height: 1,  
-                width: "100%",  
-                backgroundColor: "#000",  
-            }}  
-        />  
-    );  
-};  
-//handling onPress action  
-getListViewItem = (item) => {  
+  renderSeparator = () => {
+    return (
+        <View
+            style={{
+                height: 1,
+                width: "100%",
+                backgroundColor: "#000",
+            }}
+        />
+    );
+};
+//handling onPress action
+getListViewItem = (item) => {
     Alert.alert(
       "description : "+item.description
-    );  
+    );
 }
 
 componentDidMount(){
-  let url = 'https://'+config.INSTANCE+'.service-now.com/api/now/table/'+config.TABLE_API_NAME;
-  let username = config.USERNAME;
-  let password = config.PASSWORD;
-  let headers = {}
-  headers['Authorization'] =  'Basic ' + base64.encode(username + ":" + password);
-  fetch(url,
-    { 
-      method:'GET',
-      headers: headers,
-    }
-  )
-  .then(response => response.json())
+
+  let res = getTicketApi().then(response => response)
   .then((responseJson) => {
-      console.log(responseJson)
       this.setState({
           loading: false,
           dataSource: responseJson.result
@@ -67,57 +55,57 @@ componentDidMount(){
 }
 
 render() {
-  
+
   if(this.state.loading){
-    return(  
-            <Text>Data is loading...</Text>  
+    return(
+            <Text>Data is loading...</Text>
     )
   }
   else{
-    return (   
-        <View style={styles.container}>  
-            <FlatList  
-                data={this.state.dataSource}  
-                renderItem={({item}) => 
+    return (
+        <View style={styles.container}>
+            <FlatList
+                data={this.state.dataSource}
+                renderItem={({item}) =>
                 <View>
-                    <Text style={styles.item}  
+                    <Text style={styles.item}
                           onPress={this.getListViewItem.bind(this, item)}>{item.description}</Text>
-                    <View style={styles.datacontainer}> 
-                    <Text style={styles.smalltext}  
+                    <View style={styles.datacontainer}>
+                    <Text style={styles.smalltext}
                           onPress={this.getListViewItem.bind(this, item)}>{"Ticket No. "+item.number}</Text>
-                    <Text style={styles.smalltext}  
-                          onPress={this.getListViewItem.bind(this, item)}>{"Created by "+item.sys_created_by}</Text>   
+                    <Text style={styles.smalltext}
+                          onPress={this.getListViewItem.bind(this, item)}>{"Created by "+item.sys_created_by}</Text>
                     </View>
-                </View> }  
-                ItemSeparatorComponent={this.renderSeparator}  
+                </View> }
+                ItemSeparatorComponent={this.renderSeparator}
             />
             <TouchableOpacity
              onPress = { this.OpenServiceNowForm }>
              <Text style={styles.button}>
-              {"Post a new Ticket"} 
+              {"Post a new Ticket"}
              </Text>
-              </TouchableOpacity>  
-        </View>  
-    ); 
-  }  
+              </TouchableOpacity>
+        </View>
+    );
+  }
 }
 }
 
-const styles = StyleSheet.create({  
-  container: {  
-      flex: 1,  
-  },  
-  item: {  
-      padding: 5,  
-      fontSize: 18,  
-      height: 34,
-      marginLeft:5  
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
   },
-  smalltext: {  
-    padding: 5,  
-    fontSize: 13,  
+  item: {
+      padding: 5,
+      fontSize: 18,
+      height: 34,
+      marginLeft:5
+  },
+  smalltext: {
+    padding: 5,
+    fontSize: 13,
     height: 30,
-    marginLeft:5  
+    marginLeft:5
   },
   datacontainer: {
     display: "flex",
@@ -133,8 +121,8 @@ const styles = StyleSheet.create({
     color:"white",
     alignContent:"center",
     textAlign:"center"
-    
+
   }
-})  
+})
 
 export default ServiceNowList
