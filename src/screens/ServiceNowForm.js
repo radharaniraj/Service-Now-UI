@@ -4,6 +4,7 @@ import { Button } from 'react-native-paper';
 import { Formik, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 let base64 = require('base-64');
+import {postTicketApi} from "../utils/postTicketApi";
 
 export default class App extends React.Component {
   render() {
@@ -17,36 +18,9 @@ export default class App extends React.Component {
               .required('Required')
           })}
           onSubmit={(values, formikActions) => {
-            setTimeout(() => {
-              const ds = values.Description
-              let url = 'https://dev64765.service-now.com/api/now/table/x_514301_shubhamap_shubhamtable';
-      let username = 'admin';
-      let password = 'Shubham123';
-       let headers = {}
-  headers['Authorization'] =  'Basic ' + base64.encode(username + ":" + password);
-  headers['Content-Type'] = 'application/json;charset=UTF-8';
-
-      let data = {
-        'description': ds
-      }
-      fetch(url, {method:'POST',
-         headers: headers,
-         body: JSON.stringify(data)
-      })
-      .then(response => {
-         console.log(response.status)
-         if(response.status==201)
-        {
-            Alert.alert("Ticket created "+ds)
-        }
-        else{
-          Alert.alert("error occurred")
-        }
-    })
-    .catch(error => console.log(error))
-              // Important: Make sure to setSubmitting to false so our loading indicator
-              // goes away.
-              formikActions.setSubmitting(false);
+            setTimeout(async () => {
+                postTicketApi(values.Description);
+                formikActions.setSubmitting(false);
             }, 500);
           }}>
           {props => (
