@@ -16,6 +16,8 @@ export default class App extends React.Component {
           validationSchema={Yup.object({
             Description: Yup.string()
               .required('Required')
+              .min(300, 'Description must be greater than 300 characters')
+              .max(4000, 'Description must be less than 4000 characters')
           })}
           onSubmit={(values, formikActions) => {
             setTimeout(async () => {
